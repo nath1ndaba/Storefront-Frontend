@@ -1,0 +1,104 @@
+# ===============================
+# React / Node / JavaScript
+# ===============================
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files (DO NOT COMMIT SECRETS)
+.env
+.env.*
+!.env.example
+
+# Local dev files
+*.local
+
+# ===============================
+# IDE / Editor Settings
+# ===============================
+
+# VSCode
+.vscode/
+.history/
+*.code-workspace
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# JetBrains / WebStorm
+.idea/
+*.iml
+
+# ===============================
+# System / OS
+# ===============================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.cache/
+
+# ===============================
+# Others
+# ===============================
+
+# Logs
+logs/
+*.log
+log/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Coverage
+coverage/
+*.lcov
+
+# Babel
+.babelrc
+
+# TypeScript
+*.tsbuildinfo
+
+# Yarn / NPM state
+.pnp.*
+.pnp.js
+
+# Optional: if using Firebase / AWS / Amplify
+.firebase/
+.aws/
+amplify/
+
+# Optional: If using Storybook
+.storybook-out/
+out/
+
+# Optional: Next.js
+.next/
+
+# Optional: Expo / React Native
+.expo/
