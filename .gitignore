@@ -102,3 +102,13 @@ out/
 
 # Optional: Expo / React Native
 .expo/
+
+
+# Local env files (contain secrets)
+.env.local
+.env*.local
+
+# But allow these (no secrets, just config):
+# .env
+# .env.development
+# .env.production
