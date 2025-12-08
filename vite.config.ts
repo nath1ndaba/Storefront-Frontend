@@ -4,13 +4,16 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: false
+  },
   server: {
     proxy: {
       '/api': {
-        target: 'https://localhost:7164',
+        target: 'https://storefrontapi.onrender.com',
         changeOrigin: true,
-        secure: false, // Allow self-signed certificates in development
-        rewrite: (path) => path, // Keep the /api prefix
+        rewrite: (path) => path
       }
     }
   }

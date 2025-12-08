@@ -16,10 +16,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Environment files (DO NOT COMMIT SECRETS)
-.env
-.env.*
-!.env.example
+# Environment files with secrets
+.env.local
+.env*.local
 
 # Local dev files
 *.local
@@ -102,13 +101,3 @@ out/
 
 # Optional: Expo / React Native
 .expo/
-
-
-# Local env files (contain secrets)
-.env.local
-.env*.local
-
-# But allow these (no secrets, just config):
-# .env
-# .env.development
-# .env.production
