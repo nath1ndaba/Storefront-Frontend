@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
+import { API_BASE_URL } from '../config/api';
 
 export class Client {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
@@ -14,7 +15,8 @@ export class Client {
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "https://storefrontapi.onrender.com";
+        // Use the centralized API_BASE_URL if no baseUrl is provided
+        this.baseUrl = baseUrl ?? API_BASE_URL;
     }
 
     getAllProducts(): Promise<ApiResponseOfIEnumerableOfProductDto> {

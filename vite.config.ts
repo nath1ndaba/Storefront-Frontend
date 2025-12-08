@@ -7,8 +7,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://storefrontapi.onrender.com',
+        target: 'https://localhost:7164',
         changeOrigin: true,
+        secure: false, // Allow self-signed certificates in development
+        rewrite: (path) => path, // Keep the /api prefix
       }
     }
   }

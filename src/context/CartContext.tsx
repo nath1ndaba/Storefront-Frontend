@@ -1,6 +1,7 @@
 ﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Cart } from '../types';
 import { getSessionId } from '../utils/sessionId';
+import { getApiUrl } from '../config/api';
 
 interface CartContextType {
   cart: Cart | null;
@@ -21,7 +22,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const refreshCart = async () => {
     try {
       const sessionId = getSessionId();
-      const response = await fetch(`https://storefrontapi.onrender.com/api/cart?sessionId=${sessionId}`);
+      const response = await fetch(getApiUrl(`cart?sessionId=${sessionId}`));
       
       if (response.ok) {
         const text = await response.text();
@@ -41,7 +42,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const sessionId = getSessionId();
-      const response = await fetch('https://storefrontapi.onrender.com/api/cart', {
+      const response = await fetch(getApiUrl('cart'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +73,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateCartItem = async (itemId: number, quantity: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://storefrontapi.onrender.com/api/cart/${itemId}`, {
+      const sessionId = getSessionId();
+      const response = await fetch(getApiUrl(`cart/${itemId}?sessionId=${sessionId}`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +99,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeFromCart = async (itemId: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://storefrontapi.onrender.com/api/cart/${itemId}`, {
+      const response = await fetch(getApiUrl(`cart/${itemId}`), {
         method: 'DELETE',
       });
 
@@ -119,7 +121,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const sessionId = getSessionId();
-      const response = await fetch(`https://storefrontapi.onrender.com/api/cart?sessionId=${sessionId}`, {
+      const response = await fetch(getApiUrl(`cart?sessionId=${sessionId}`), {
         method: 'DELETE',
       });
 
