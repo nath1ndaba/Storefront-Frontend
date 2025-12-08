@@ -9,12 +9,20 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
-  const { addToCart, loading } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+  const { addToCart } = useCart();
 
   const handleAddToCart = async () => {
     if (product.id) {
-      await addToCart(product.id, quantity);
-      setQuantity(1);
+      setIsAdding(true);
+      try {
+        await addToCart(product.id, quantity);
+        setQuantity(1);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+      } finally {
+        setIsAdding(false);
+      }
     }
   };
 
@@ -49,13 +57,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 style={styles.input}
+                disabled={isAdding}
               />
               <button
                 onClick={handleAddToCart}
-                disabled={loading}
-                style={loading ? { ...styles.button, ...styles.buttonDisabled } : styles.button}
+                disabled={isAdding}
+                style={isAdding ? { ...styles.button, ...styles.buttonDisabled } : styles.button}
               >
-                {loading ? 'Adding...' : 'Add to Cart'}
+                {isAdding ? 'Adding...' : 'Add to Cart'}
               </button>
             </div>
           )}

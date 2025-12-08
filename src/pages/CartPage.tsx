@@ -6,6 +6,10 @@ import { formatCurrency } from '../utils/sessionId';
 const CartPage: React.FC = () => {
   const { cart, loading, clearCart } = useCart();
 
+  const handleCheckout = () => {
+    alert('Checkout functionality is not implemented yet. This is a demo storefront!');
+  };
+
   if (loading && !cart) {
     return (
       <div style={styles.container}>
@@ -49,7 +53,7 @@ const CartPage: React.FC = () => {
             <span>Total Amount:</span>
             <span style={styles.summaryTotal}>{formatCurrency(cart.totalAmount)}</span>
           </div>
-          <button style={styles.checkoutButton}>
+          <button style={styles.checkoutButton} onClick={handleCheckout}>
             Proceed to Checkout
           </button>
         </div>

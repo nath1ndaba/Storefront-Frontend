@@ -1,6 +1,5 @@
 ﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Cart } from '../types';
-import { Client } from '../services/storefront-client';
 import { getSessionId } from '../utils/sessionId';
 
 interface CartContextType {
@@ -18,14 +17,20 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
-  const client = new Client();
 
   const refreshCart = async () => {
     try {
       const sessionId = getSessionId();
-      const response = await client.getCart(sessionId);
-      if (response.success && response.data) {
-        setCart(response.data);
+      const response = await fetch(`https://storefrontapi.onrender.com/api/cart?sessionId=${sessionId}`);
+      
+      if (response.ok) {
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
+        // Handle both Data (C# style) and data (JS style)
+        const cartData = data.Data || data.data || data;
+        console.log('Cart data:', cartData);
+        setCart(cartData);
       }
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -36,13 +41,26 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const sessionId = getSessionId();
-      const response = await client.addToCart({
-        sessionId,
-        productId,
-        quantity,
+      const response = await fetch('https://storefrontapi.onrender.com/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          SessionId: sessionId,
+          ProductId: productId,
+          Quantity: quantity,
+        }),
       });
-      if (response.success && response.data) {
-        setCart(response.data);
+
+      if (response.ok) {
+        const text = await response.text();
+        const data = JSON.parse(text);
+        const cartData = data.Data || data.data || data;
+        setCart(cartData);
+        console.log('Added to cart:', cartData);
+      } else {
+        console.error('Failed to add to cart:', response.status);
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -54,8 +72,21 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateCartItem = async (itemId: number, quantity: number) => {
     setLoading(true);
     try {
-      await client.updateCartItem(itemId, { quantity });
-      await refreshCart();
+      const response = await fetch(`https://storefrontapi.onrender.com/api/cart/${itemId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Quantity: quantity }),
+      });
+
+      if (response.ok) {
+        await refreshCart();
+      } else {
+        console.error('Update failed with status:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+      }
     } catch (error) {
       console.error('Error updating cart item:', error);
     } finally {
@@ -66,8 +97,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeFromCart = async (itemId: number) => {
     setLoading(true);
     try {
-      await client.removeFromCart(itemId);
-      await refreshCart();
+      const response = await fetch(`https://storefrontapi.onrender.com/api/cart/${itemId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await refreshCart();
+      } else {
+        console.error('Remove failed with status:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+      }
     } catch (error) {
       console.error('Error removing from cart:', error);
     } finally {
@@ -79,8 +119,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const sessionId = getSessionId();
-      await client.clearCart(sessionId);
-      setCart(null);
+      const response = await fetch(`https://storefrontapi.onrender.com/api/cart?sessionId=${sessionId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCart(null);
+      }
     } catch (error) {
       console.error('Error clearing cart:', error);
     } finally {

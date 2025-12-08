@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import { CartItem } from '../types';
 import { formatCurrency } from '../utils/sessionId';
 import { useCart } from '../context/CartContext';
@@ -8,17 +8,48 @@ interface CartItemCardProps {
 }
 
 const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
-  const { updateCartItem, removeFromCart, loading } = useCart();
+  const { updateCartItem, removeFromCart } = useCart();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  
+  // Debug: Log the item structure
+  console.log('CartItemCard item:', item);
+  console.log('Item ID:', item.id, 'Type:', typeof item.id);
 
-  const handleUpdateQuantity = (newQuantity: number) => {
-    if (item.id && newQuantity > 0) {
-      updateCartItem(item.id, newQuantity);
+  const handleUpdateQuantity = async (newQuantity: number) => {
+    if (!item.id) {
+      console.error('Cart item has no ID:', item);
+      alert('Cannot update item: missing ID. Please refresh the page.');
+      return;
+    }
+    
+    if (newQuantity > 0) {
+      setIsUpdating(true);
+      try {
+        console.log('Updating cart item:', item.id, 'to quantity:', newQuantity);
+        await updateCartItem(item.id, newQuantity);
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
-  const handleRemove = () => {
-    if (item.id) {
-      removeFromCart(item.id);
+  const handleRemove = async () => {
+    if (!item.id) {
+      console.error('Cart item has no ID:', item);
+      alert('Cannot remove item: missing ID. Please refresh the page.');
+      return;
+    }
+    
+    setIsRemoving(true);
+    try {
+      console.log('Removing cart item:', item.id);
+      await removeFromCart(item.id);
+    } catch (error) {
+      console.error('Error removing item:', error);
+      setIsRemoving(false);
     }
   };
 
@@ -37,16 +68,22 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
         <div style={styles.quantityControl}>
           <button
             onClick={() => handleUpdateQuantity((item.quantity || 1) - 1)}
-            disabled={loading || (item.quantity || 1) <= 1}
-            style={styles.quantityButton}
+            disabled={isUpdating || (item.quantity || 1) <= 1}
+            style={{
+              ...styles.quantityButton,
+              ...(isUpdating || (item.quantity || 1) <= 1 ? styles.buttonDisabled : {})
+            }}
           >
             -
           </button>
           <span style={styles.quantity}>{item.quantity}</span>
           <button
             onClick={() => handleUpdateQuantity((item.quantity || 1) + 1)}
-            disabled={loading}
-            style={styles.quantityButton}
+            disabled={isUpdating}
+            style={{
+              ...styles.quantityButton,
+              ...(isUpdating ? styles.buttonDisabled : {})
+            }}
           >
             +
           </button>
@@ -54,10 +91,13 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
         <p style={styles.subtotal}>{formatCurrency(item.subtotal)}</p>
         <button
           onClick={handleRemove}
-          disabled={loading}
-          style={styles.removeButton}
+          disabled={isRemoving}
+          style={{
+            ...styles.removeButton,
+            ...(isRemoving ? styles.buttonDisabled : {})
+          }}
         >
-          Remove
+          {isRemoving ? 'Removing...' : 'Remove'}
         </button>
       </div>
     </div>
@@ -134,6 +174,10 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '0.875rem',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
   },
 };
 
