@@ -7,9 +7,11 @@ export const getApiUrl = (path: string): string => {
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
   
   if (API_BASE_URL) {
-    return `${API_BASE_URL}/${cleanPath}`;
+    // When API_BASE_URL is set (production), add /api/ prefix to the path
+    const apiPath = cleanPath.startsWith('api/') ? cleanPath : `api/${cleanPath}`;
+    return `${API_BASE_URL}/${apiPath}`;
   }
   
-  // When using proxy, ensure path starts with /api
+  // When using proxy (development), ensure path starts with /api
   return cleanPath.startsWith('api') ? `/${cleanPath}` : `/api/${cleanPath}`;
 };

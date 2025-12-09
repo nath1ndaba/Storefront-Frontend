@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
+import { getApiUrl } from '../config/api';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -10,8 +11,11 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Direct fetch to test if the proxy works
-        const response = await fetch('/api/products');
+        // Use the configured API URL
+        const apiUrl = getApiUrl('products');
+        console.log('Fetching from URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
         console.log('Fetch response status:', response.status);
         console.log('Fetch response ok:', response.ok);
         
