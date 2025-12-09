@@ -99,7 +99,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeFromCart = async (itemId: number) => {
     setLoading(true);
     try {
-      const response = await fetch(getApiUrl(`cart/${itemId}`), {
+      const sessionId = getSessionId();
+      const response = await fetch(getApiUrl(`cart/${itemId}?sessionId=${sessionId}`), {
         method: 'DELETE',
       });
 
